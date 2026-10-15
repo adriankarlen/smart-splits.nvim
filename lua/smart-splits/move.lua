@@ -2,6 +2,7 @@ local Types = require('smart-splits.types')
 local Win = require('smart-splits.win')
 local Direction = Types.Direction
 local AtEdgeBehavior = Types.AtEdgeBehavior
+local FloatBehavior = Types.FloatBehavior
 local DirectionKeys = Win.DirectionKeys
 local DirectionKeysReverse = Win.DirectionKeysReverse
 
@@ -58,6 +59,11 @@ function M.move_cursor(direction, opts)
     if horizontal and same_row then
       restore_row(offset)
     end
+    return
+  end
+
+  if Config.move.float == FloatBehavior.mux and Win.is_floating() then
+    Backend.move(direction, move_opts)
     return
   end
 

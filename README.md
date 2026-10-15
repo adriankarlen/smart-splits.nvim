@@ -32,6 +32,7 @@
   - [Quick Start](#quick-start)
   - [Configuration](#configuration)
     - [Ignore Lists](#ignore-lists)
+    - [Floating Windows](#floating-windows)
     - [At Edge Behavior](#at-edge-behavior)
   - [Keybindings](#keybindings)
   - [Lua API](#lua-api)
@@ -210,6 +211,8 @@ require('smart-splits').setup({
     at_edge = 'wrap',
     -- keep the cursor on the same screen row when moving horizontally
     same_row = false,
+    -- 'previous' | 'mux', see Floating Windows below
+    float = 'previous',
   },
 
   swap = {
@@ -258,6 +261,16 @@ require('smart-splits').setup({
   resize = { ignored_filetypes = { inherit = true, 'Trouble' } },
 })
 ```
+
+### Floating Windows
+
+Floats have no neighbors, so by default moving out of one first focuses the previously focused
+window and moves from there. That leaves the float, which closes floats that close themselves on
+`WinLeave`, such as a floating terminal. Set `move.float = 'mux'` to hand the move straight to the
+multiplexer backend instead, leaving Neovim's focus untouched. Resizing and swapping always act on
+the previous window.
+
+Floats with a `zindex` below 50 are treated as sidebars and move like regular splits either way.
 
 ### At Edge Behavior
 
@@ -496,6 +509,7 @@ it finds, with the new location, and `:checkhealth smart-splits` repeats the rep
 | `at_edge`                     | `move.at_edge`          |
 | `move_cursor_same_row`        | `move.same_row`         |
 | `cursor_follows_swapped_bufs` | `swap.move_cursor`      |
+| `float_win_behavior`          | `move.float`            |
 | `multiplexer_integration`     | `mux.backend`           |
 | `log_level`                   | `log.level`             |
 | `ignored_buftypes`            | unchanged               |
@@ -506,7 +520,6 @@ it finds, with the new location, and `:checkhealth smart-splits` repeats the rep
 | Removed                                                          | Why                                                        |
 | ---------------------------------------------------------------- | ---------------------------------------------------------- |
 | `disable_multiplexer_nav_when_zoomed`                            | Zoom is handled inside the backend, configure it there     |
-| `float_win_behavior`                                             | Floating windows always act on the previous window         |
 | `wezterm_cli_path`, `kitty_password`, `zellij_move_focus_or_tab` | Moved to their backend plugins                             |
 | `tmux_integration`, `wrap_at_edge`                               | Deprecated in v2, now gone                                 |
 | `vim.g.smart_splits_multiplexer_integration`                     | Unnecessary, backends are required lazily                  |

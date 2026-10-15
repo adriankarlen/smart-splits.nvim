@@ -8,6 +8,9 @@
 ---`config.move.at_edge`. Stored by `config.lua`, interpreted by `move.lua`.
 ---@alias SmartSplitsAtEdgeBehavior 'split'|'wrap'|'stop'|fun(ctx: SmartSplitsAtEdgeContext)
 
+---`config.move.float`. Stored by `config.lua`, interpreted by `move.lua`.
+---@alias SmartSplitsFloatBehavior 'previous'|'mux'
+
 local M = {}
 
 M.Direction = {
@@ -28,6 +31,13 @@ M.AtEdgeBehavior = {
   wrap = 'wrap',
   ---@type SmartSplitsAtEdgeBehavior
   stop = 'stop',
+}
+
+M.FloatBehavior = {
+  ---@type SmartSplitsFloatBehavior
+  previous = 'previous',
+  ---@type SmartSplitsFloatBehavior
+  mux = 'mux',
 }
 
 return M
