@@ -385,6 +385,24 @@ describe('move_cursor', function()
       assert.equals(wins[2], helpers.curwin())
     end)
 
+    it('hands a regular float straight to the backend when move.float is mux', function()
+      local backend, calls = helpers.mock_backend()
+      ss.setup({ move = { float = 'mux' }, mux = { backend = backend } })
+      local wins = helpers.create_vsplits(2)
+      helpers.focus(wins[1])
+      local buf = vim.api.nvim_create_buf(false, true)
+      local float = vim.api.nvim_open_win(buf, true, {
+        relative = 'editor',
+        width = 10,
+        height = 5,
+        row = 5,
+        col = 5,
+      })
+      ss.move_cursor_right()
+      assert.equals(float, helpers.curwin())
+      assert.is_true(vim.tbl_contains(helpers.ops(calls), 'move'))
+    end)
+
     it('does not crash when both current and previous windows are floats', function()
       local wins = helpers.create_vsplits(2)
       helpers.focus(wins[1])

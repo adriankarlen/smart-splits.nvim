@@ -1,5 +1,6 @@
 local Types = require('smart-splits.types')
 local AtEdgeBehavior = Types.AtEdgeBehavior
+local FloatBehavior = Types.FloatBehavior
 
 ---A list of buftypes or filetypes, so a plain `string[]` satisfies it. Given on
 ---its own it replaces the top level list of the same name; set `inherit = true`
@@ -17,6 +18,7 @@ local AtEdgeBehavior = Types.AtEdgeBehavior
 ---@class SmartSplitsMoveConfig
 ---@field at_edge SmartSplitsAtEdgeBehavior what to do when there is no window and no pane in the given direction
 ---@field same_row boolean keep the cursor on the same screen row when moving horizontally
+---@field float SmartSplitsFloatBehavior what to do when moving out of a floating window
 ---@field ignored_buftypes SmartSplitsIgnoreList|nil
 ---@field ignored_filetypes SmartSplitsIgnoreList|nil
 
@@ -62,6 +64,7 @@ local defaults = {
   move = {
     at_edge = AtEdgeBehavior.wrap,
     same_row = false,
+    float = FloatBehavior.previous,
   },
   swap = {
     move_cursor = false,
@@ -87,7 +90,7 @@ local schema = {
   ignored_buftypes = true,
   ignored_filetypes = true,
   resize = { 'amount', 'ignored_events', 'ignored_buftypes', 'ignored_filetypes' },
-  move = { 'at_edge', 'same_row', 'ignored_buftypes', 'ignored_filetypes' },
+  move = { 'at_edge', 'same_row', 'float', 'ignored_buftypes', 'ignored_filetypes' },
   swap = { 'move_cursor' },
   mux = { 'backend', 'warn_if_unusable' },
   log = { 'level', 'file' },
@@ -102,6 +105,7 @@ local renamed = {
   move_cursor_same_row = 'move.same_row',
   at_edge = 'move.at_edge',
   cursor_follows_swapped_bufs = 'swap.move_cursor',
+  float_win_behavior = 'move.float',
   multiplexer_integration = 'mux.backend',
   log_level = 'log.level',
 }
@@ -110,7 +114,6 @@ local renamed = {
 ---@type table<string, string>
 local removed = {
   disable_multiplexer_nav_when_zoomed = 'zoom is handled inside the backend now, configure it there',
-  float_win_behavior = 'floating windows always focus the previous window',
   wezterm_cli_path = 'moved to the wezterm backend plugin',
   kitty_password = 'moved to the kitty backend plugin',
   zellij_move_focus_or_tab = 'moved to the zellij backend plugin',
@@ -179,6 +182,11 @@ local function check_values()
       ('`move.at_edge` must be "stop", "wrap", "split" or a function, got %s'):format(vim.inspect(at_edge))
     )
     options.move.at_edge = defaults.move.at_edge
+  end
+
+  if not FloatBehavior[options.move.float] then
+    table.insert(issues, ('`move.float` must be "previous" or "mux", got %s'):format(vim.inspect(options.move.float)))
+    options.move.float = defaults.move.float
   end
 
   if type(options.resize.amount) ~= 'number' then

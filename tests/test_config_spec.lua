@@ -128,9 +128,15 @@ describe('smart-splits.config', function()
     end)
 
     it('reports a removed key with a reason', function()
+      Config.setup({ disable_multiplexer_nav_when_zoomed = true })
+      assert.equal(1, #Config.issues())
+      assert.truthy(Config.issues()[1]:find('backend', 1, true))
+    end)
+
+    it('points float_win_behavior at move.float', function()
       Config.setup({ float_win_behavior = 'mux' })
       assert.equal(1, #Config.issues())
-      assert.truthy(Config.issues()[1]:find('previous window', 1, true))
+      assert.truthy(Config.issues()[1]:find('move.float', 1, true))
     end)
 
     it('reports backend specific keys as moved to the backend plugin', function()
@@ -166,7 +172,7 @@ describe('smart-splits.config', function()
         ignored_buftypes = {},
         ignored_filetypes = {},
         resize = { amount = 1, ignored_events = {}, ignored_buftypes = {}, ignored_filetypes = {} },
-        move = { at_edge = 'stop', same_row = true, ignored_buftypes = {}, ignored_filetypes = {} },
+        move = { at_edge = 'stop', same_row = true, float = 'mux', ignored_buftypes = {}, ignored_filetypes = {} },
         swap = { move_cursor = true },
         mux = { backend = nil, warn_if_unusable = false },
         log = { level = 'debug', file = false },
@@ -180,6 +186,12 @@ describe('smart-splits.config', function()
       Config.setup({ move = { at_edge = 'wrapp' } })
       assert.equal(1, #Config.issues())
       assert.equal('wrap', Config.move.at_edge)
+    end)
+
+    it('rejects an invalid move.float and keeps the default', function()
+      Config.setup({ move = { float = 'muxx' } })
+      assert.equal(1, #Config.issues())
+      assert.equal('previous', Config.move.float)
     end)
 
     it('accepts a function for at_edge', function()
