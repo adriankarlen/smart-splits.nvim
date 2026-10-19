@@ -430,8 +430,6 @@ The community is free to make 3rd party backends. Below is a list of community-m
 | ----------- | ------------------------------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Herdr       | [backend-herdr](https://github.com/adriankarlen/smart-splits-beckend-herdr) | @adriankarlen |                                                   |
 
-The community is also free to make 3rd party backends.
-
 ### Multiple Backends
 
 `mux.backend` accepts a list in priority order. The first backend whose `detect()` returns `true`
